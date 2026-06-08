@@ -1,0 +1,11 @@
+# Local directory for hidden transient data
+.terraform/
+
+# Hide all architecture state files
+*.tfstate
+*.tfstate.backup
+
+# Hide crash logs or configuration variable files that might hold secrets
+*.tfvars
+*.tfvars.json
+crash.log
