@@ -11,22 +11,16 @@ provider "aws" {
   region = "us-east-1"
 }
 
-data "aws_caller_identity" "current" {}
-
-output "aws_account_details" {
-  value = {
-    account_id = data.aws_caller_identity.current.account_id
-    arn        = data.aws_caller_identity.current.arn
-  }
+# Stamp out the Production Network
+module "vpc_production" {
+  source           = "./modules/vpc"  # Tells Terraform where the cookie cutter is
+  environment_name = "production"
+  vpc_cidr_block   = "10.0.0.0/16"
 }
 
-# 5. Our First Resource Block (Creates a Virtual Private Network)
-resource "aws_vpc" "main" {
-  cidr_block           = "10.0.0.0/16"
-  enable_dns_hostnames = true
-
-  tags = {
-    Name        = "prod-vpc"
-    Environment = "production"
-  }
+# Stamp out the Staging Network
+module "vpc_staging" {
+  source           = "./modules/vpc"
+  environment_name = "staging"
+  vpc_cidr_block   = "10.1.0.0/16"
 }
