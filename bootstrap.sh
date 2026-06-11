@@ -26,14 +26,14 @@ aws s3api put-bucket-encryption \
     --server-side-encryption-configuration '{"Rules": [{"ApplyServerSideEncryptionByDefault": {"SSEAlgorithm": "AES256"}}]}'
 
 # 4. Create the DynamoDB Lock Table
-echo "Creating DynamoDB table: $TABLE_NAME"
-aws dynamodb create-table \
-    --table-name $TABLE_NAME \
-    --attribute-definitions AttributeName=LockID,AttributeType=S \
-    --key-schema AttributeName=LockID,KeyType=HASH \
-    --billing-mode PAY_PER_REQUEST \
-    --region $REGION \
-    --no-cli-pager
+# echo "Creating DynamoDB table: $TABLE_NAME"
+# aws dynamodb create-table \
+#     --table-name $TABLE_NAME \
+#     --attribute-definitions AttributeName=LockID,AttributeType=S \
+#     --key-schema AttributeName=LockID,KeyType=HASH \
+#     --billing-mode PAY_PER_REQUEST \
+#     --region $REGION \
+#     --no-cli-pager
 
 echo "Bootstrap complete!"
 echo "========================================"
