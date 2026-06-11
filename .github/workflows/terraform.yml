@@ -1,0 +1,54 @@
+# .github/workflows/terraform.yml
+
+name: "Enterprise Infrastructure Pipeline"
+
+# The pipeline triggers on Pull Requests, and when code is merged into the main branch
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+# Required permissions for secure AWS authentication (OIDC)
+permissions:
+  id-token: write 
+  contents: read
+
+jobs:
+  terraform:
+    name: "Terraform Deploy"
+    runs-on: ubuntu-latest
+    
+    # We define environment variables to keep our terminal clean (no color output in logs)
+    env:
+      TF_IN_AUTOMATION: true
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          # We will configure this Role ARN in the next step!
+          role-to-assume: arn:aws:iam::129898048629:role/GitHubActions_TerraformRole
+          aws-region: us-east-1
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Format Check
+        # Fails the pipeline if the code isn't formatted properly
+        run: terraform fmt -check
+
+      - name: Terraform Plan
+        # Runs on all triggers to show us what WILL happen
+        run: terraform plan -no-color
+
+      - name: Terraform Apply
+        # ONLY runs when code is actually merged into the main branch
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: terraform apply -auto-approve -input=false
